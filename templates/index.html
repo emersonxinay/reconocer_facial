@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video Streaming</title>
+  </head>
+  <body>
+    <h1>Video Streaming Using Flask</h1>
+    {% if camera_enabled %}
+    <img src="{{ url_for('video_feed') }}" />
+    {% else %}
+    <p>Camera is disabled. Click the button to enable.</p>
+    {% endif %}
+    <button onclick="toggleCamera()">Toggle Camera</button>
+
+    <script>
+      function toggleCamera() {
+        fetch('/toggle_camera')
+          .then(response => response.text())
+          .then(data => console.log(data));
+      }
+    </script>
+  </body>
+</html>

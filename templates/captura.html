@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Captura de Imagen</title>
+  </head>
+  <body>
+    <h1>Captura de Imagen</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas
+      id="canvas"
+      width="640"
+      height="480"
+      style="display: none;"
+    ></canvas>
+    <button id="capturar">Capturar Foto</button>
+    <script>
+      navigator.mediaDevices.getUserMedia({ video: true })
+          .then(function(stream) {
+              var video = document.getElementById('video');
+              video.srcObject = stream;
+          })
+          .catch(function(error) {
+              console.error('Error al acceder a la cámara: ', error);
+          });
+
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var capturar = document.getElementById('capturar');
+      capturar.addEventListener('click', function() {
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          var dataURL = canvas.toDataURL('image/png');
+          fetch('/guardar_imagen', {
+              method: 'POST',
+              body: JSON.stringify({ imagen: dataURL }),
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          })
+          .then(response => response.json())
+          .then(data => {
+              console.log(data.mensaje);
+              window.location.href = '/reconocimiento';
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
+      });
+    </script>
+  </body>
+</html>
